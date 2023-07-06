@@ -22,10 +22,15 @@ To get started with the project, follow the steps below:
 
 1. Clone this repository to your local machine.
 2. Navigate to the project directory.
-2. You can start and build all the project just running.
+3. You can start and build all the project just running.
 
    ```shell
    docker-compose up --build
+   ```
+4. If the project is already build, just run :
+
+   ```shell
+   docker-compose up
    ```
 ### Backend
 
@@ -44,6 +49,7 @@ Start the backend container:
     docker-compose exec backend bash
     python3 manage.py migrate
     ```
+
 
 ### Frontend
 
@@ -76,6 +82,7 @@ Password: mypassword
    ```shell
    docker-compose exec frontend bash
    ```
+
 ###Accessing the Application
 
 Once the backend and frontend containers are running, you can access the application in your web browser:
