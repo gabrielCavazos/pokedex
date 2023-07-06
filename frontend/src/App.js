@@ -1,76 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { useTable } from 'react-table';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
-function Table({ columns, data, handleFavorite }) {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data });
-
-  return (
-    <table {...getTableProps()} className="table">
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <td {...cell.getCellProps()}>
-                  {cell.column.id === 'favorite' ? (
-                    <FavoriteCell
-                      value={cell.value}
-                      handleFavorite={handleFavorite}
-                      id={row.original.id}
-                    />
-                  ) : (
-                    cell.render('Cell')
-                  )}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
-        <tr>
-          <td colSpan={columns.length} className="empty-row"></td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
-
-function FavoriteCell({ value, handleFavorite, id }) {
-  const handleToggleFavorite = () => {
-    handleFavorite(id);
-  };
-  
-  return (
-    <span className="favorite-cell" onClick={handleToggleFavorite}>
-      {value === true ? (
-        <FaHeart className="heart-icon filled" />
-      ) : (
-        <FaRegHeart className="heart-icon" />
-      )}
-    </span>
-  );
-}
+import Table from './Table';
+import { notify, notifyError } from './helpers';
+import PokemonDetail from './PokemonDetail';
 
 
 function App() {
@@ -80,39 +16,9 @@ function App() {
   const [avgHeight, setAvgHeight] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [pokemonDetail, setPokemonDetail] = useState({});
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
-  const notify = (weight_average, height_average, count) => {
-    toast(`Favorite data: avg weight:${weight_average} avg height:${height_average} count:${count}`)
-  };
-  
-  const handleFavorite = id => {
-    const index = data.findIndex(pokemon => pokemon.id === id);
-
-
-
-    const requestOptions = {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-    };
-    const url = `http://localhost:8000/api/pokemon/${id}/`;
-    fetch(url, requestOptions)
-      .then(response => response.json())
-      .then(data => {
-        notify(data["weight_average"],data["height_average"],data["count"])
-
-
-      })
-      .catch(error => {
-
-
-      });
-
-    setData(prevData => {
-      const newData = [...prevData];
-      newData[index].favorite = !newData[index].favorite;
-      return newData;
-    });
-  };
 
   useEffect(() => {
     const fetchData = () => {
@@ -129,15 +35,78 @@ function App() {
 
         })
         .catch(error => {
-          console.error('Error fetching data:', error);
+          notifyError()
           setLoading(false)
+        });
+    };
+    if(!loading){
+      fetchData();
+    }
+  }, [pageNumber]);
 
+
+  function openModal() {
+    setModalIsOpen(true);
+  }
+
+ 
+  const handleFavorite = id => {
+    const index = data.findIndex(pokemon => pokemon.id === id);
+
+    const requestOptions = {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    const url = `http://localhost:8000/api/pokemon/${id}/`;
+    fetch(url, requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        notify(data["weight_average"],data["height_average"],data["count"])
+      })
+      .catch(error => {
+        notifyError()
+      });
+
+    setData(prevData => {
+      const newData = [...prevData];
+      newData[index].favorite = !newData[index].favorite;
+      return newData;
+    });
+  };
+  const handleDetail = id => {
+    console.log("Detail of" + id)
+    
+    const fetchData = () => {
+      const url = `http://localhost:8000/api/pokemon/${id}/`;
+      fetch(url)
+        .then(response => response.json())
+        .then(responseData => {
+          setPokemonDetail(responseData);
+          openModal();
+        })
+        .catch(error => {
+          console.log(error)
+          notifyError()
         });
     };
 
     fetchData();
-  }, [pageNumber]);
+  };
+  
 
+  const handlePreviousPage = () => {
+    setPageNumber(prevPageNumber => prevPageNumber - 1);
+  };
+
+  const handleNextPage = () => {
+    setPageNumber(prevPageNumber => prevPageNumber + 1);
+  };
+
+  const override = {
+    display: "block",
+    margin: "0 auto",
+    borderColor: "red",
+  };
   const columns = [
     {
       Header: 'Favorite',
@@ -146,7 +115,7 @@ function App() {
     },
     {
       Header: 'Pokemon Number',
-      accessor: 'id',
+      accessor: 'external_id',
     },
     {
       Header: 'Name',
@@ -172,21 +141,16 @@ function App() {
         return <span>{transformedAbilities}</span>;
       },
     },
+    {
+      id: "Detail", 
+      Header: 'Detail',
+      accessor: 'id',
+      Cell: ({ value }) => {
+        return <button onClick={() => handleDetail(value)}>View Details</button>
+      },
+    },
   ];
-  
-  const handlePreviousPage = () => {
-    setPageNumber(prevPageNumber => prevPageNumber - 1);
-  };
 
-  const handleNextPage = () => {
-    setPageNumber(prevPageNumber => prevPageNumber + 1);
-  };
-
-  const override = {
-    display: "block",
-    margin: "0 auto",
-    borderColor: "red",
-  };
 
   return (
     <div className="App">
@@ -207,6 +171,9 @@ function App() {
         aria-label="Loading Spinner"
         data-testid="loader"
       />
+      {loading && 
+        <p>We are loading your pokemons! wait a min.</p>
+      }
       {!loading && (
         <>
           <div className="pagination">
@@ -223,6 +190,7 @@ function App() {
             </button>
           </div>
           <Table columns={columns} data={data} handleFavorite={handleFavorite} />
+          <PokemonDetail pokemonDetail={pokemonDetail} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen}></PokemonDetail>
         </>
       )}
  
