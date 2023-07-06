@@ -1,0 +1,30 @@
+version: '3'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+    volumes:
+      - ./backend:/code
+  #frontend:
+  #  build: ./frontend
+  #  ports:
+  #    - "3000:3000"
+  #  environment:
+  #    - CHOKIDAR_USEPOLLING=true  # Enable file watching via polling
+  #  volumes:
+  #    - ./frontend:/app
+  database:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
