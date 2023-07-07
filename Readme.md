@@ -1,5 +1,8 @@
 # Gabe Pokedex!
 
+![image](https://github.com/gabrielCavazos/pokedex/assets/65939447/17c3ecbb-95af-47d2-bd93-23570a358bdb)
+
+
 Welcome to the Gabe Pokedex project! This project consists of a frontend and backend application running with Docker containers.
 
 The project utilizes the PokeAPI to fetch information about all the current Pokémon and displays them in a table. You have the ability to add Pokémon to your favorites and view detailed information about each Pokémon.
@@ -32,6 +35,15 @@ To get started with the project, follow the steps below:
    ```shell
    docker-compose up
    ```
+
+### Accessing the Application
+
+Once the backend and frontend containers are running, you can access the application in your web browser:
+
+Frontend: http://localhost:3000
+Backend: http://localhost:8000
+
+   
 ### Backend
 
 The backend application runs on port 8000.
@@ -82,14 +94,6 @@ Password: mypassword
    ```shell
    docker-compose exec frontend bash
    ```
-
-###Accessing the Application
-
-Once the backend and frontend containers are running, you can access the application in your web browser:
-
-Frontend: http://localhost:3000
-Backend: http://localhost:8000
-
 
 ### Note about the approach
 
