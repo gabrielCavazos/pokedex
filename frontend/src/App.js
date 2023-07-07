@@ -146,7 +146,7 @@ function App() {
       Header: 'Detail',
       accessor: 'id',
       Cell: ({ value }) => {
-        return <button onClick={() => handleDetail(value)}>View Details</button>
+        return <button className="button" onClick={() => handleDetail(value)}>View Details</button>
       },
     },
   ];
@@ -154,7 +154,11 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Pokemons</h1>
+    <div className="app-header">
+      <img src={process.env.PUBLIC_URL + '/poke_ball_icon.png'} alt="Poké Ball Icon" className="poke-ball-icon" />
+
+      <h1>Gabe Pokedex</h1>
+    </div>
       
       <div className="pills-container">
         <div className="pill">total: {total}</div>

@@ -92,7 +92,7 @@ function PokemonDetail({ pokemonDetail, modalIsOpen, setModalIsOpen }) {
         <div className="pill">Speed: {speed}</div>
       </div>
 
-      <button onClick={closeModal}>Close</button>
+      <button className='button' onClick={closeModal}>Close</button>
     </Modal>
   );
 }
