@@ -25,12 +25,12 @@ To get started with the project, follow the steps below:
 
 1. Clone this repository to your local machine.
 2. Navigate to the project directory.
-3. You can start and build all the project just running.
+3. You can start and build all the project just running (make sure dockers is running!).
 
    ```shell
    docker-compose up --build
    ```
-4. If the project is already build, just run :
+4. If the project is already build, just run:
 
    ```shell
    docker-compose up
@@ -54,8 +54,7 @@ The backend application runs on port 8000.
    ```shell
    docker-compose exec backend bash
    ```
-3. The project run the migration by default but if is needed to run standalone run inside the backend bash 
-Start the backend container:
+3. The project run the migration by default but if is needed to run standalone run inside the backend bash:
 
     ```shell
     docker-compose exec backend bash
